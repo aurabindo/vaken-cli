@@ -1,3 +1,17 @@
+
+/*******************************************************************************
+*
+*   Copyright (C) 2014 Aurabindo J <mail@aurabindo.in>
+*   All rights reserved.
+*
+*
+*
+*   This file is a part of the NPJ Variable Key Cryptography project. 
+*   See LICENSE.txt for legal terms.
+*
+********************************************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
