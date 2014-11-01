@@ -143,11 +143,9 @@ int ** mat_mul( int ***a, int ***b) {
     create_mat_2d(&pro);
 
     for (i = 0; i<N; i++)
-	for (j = 0; j < N; j++) {
-	    for (k = 0; k < N; k++) {
-		pro[i][j] = (*a)[i][k] * (*b)[k][j];	
-	    }	    
-	}
+	for (j = 0; j < N; j++)
+	    for (k = 0; k < N; k++)
+		pro[i][j] += (*a)[i][k] * (*b)[k][j];
 
     return pro;
 }
