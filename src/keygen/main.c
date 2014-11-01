@@ -3,8 +3,12 @@
 #include <time.h>
 #include <string.h>
 
-enum sops { L, R, U, D, B, F};
+#define N 3
 #define SOPS_NUM 6
+#define MAX 25
+#define MIN 1
+
+enum sops { L, R, U, D, B, F};
 struct sops_t {
     enum sops opr;
 }sobj;
@@ -17,7 +21,6 @@ char get_opr() {
     enum sops rando;
     rando = rand() % SOPS_NUM ;
     char ret_val;
-    printf("\nget_opr returning %d\n",rando);
     switch (rando) {
 	case L :    ret_val = 'L';
 		    break;
@@ -57,7 +60,6 @@ int main(int argc, const char *argv[])
 	
 	printf("\nEnter the Keysize: ");
 	scanf("%d",&keysize);
-	max = keysize;
 
 	char *cur_line, *save_cur_line;
 	cur_line = (char *) malloc(sizeof(char)*(keysize));
@@ -69,10 +71,7 @@ int main(int argc, const char *argv[])
 	save_cur_line = cur_line;
 
 	for (i=0; i<keysize; i++) {
-	    printf("\ni = %d\n",i);
-	    kz = (rand() % max) + min;
-	    printf("\nkz is %d\n",kz);
-	    //memcpy(cur_line,NULL,keysize -1);
+	    kz = (rand() % MAX) + MIN;
 	    for (j = 0; j<kz; j++) {
 		cur_line[j] = get_opr() ;
 	    }
