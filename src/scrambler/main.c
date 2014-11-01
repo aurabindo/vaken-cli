@@ -18,8 +18,8 @@
 
 #define DATA_FILE "payload.txt"
 #define N 3 // Max Rows and Cols
+#define sz sizeof(int)
 
-int payload[N][N];
 
 enum dim { r,c };
 
@@ -29,26 +29,41 @@ struct permute_info {
     int this, that;
 };
 
+
 int ** permute(int ***a, permute_info per);	//Do the transformation
 int ** gen_i();			//Make I matrix
 int ** mat_mul( int ***a, int ***b);		//Multiply matrices
 int ** mat_in();
 void mat_pr(int **a);
+void mat_pr_hex(int **a);
 void create_mat_2d(int ***gen);
 void free_mat_2d(int ***ptr);
 
 int main(int argc, const char *argv[])
 {
     FILE *fp_pl;
+    int **result;
+    static int **input;
+    int ret,i,j,data_len;
+
     fp_pl = fopen(DATA_FILE,"r");
     if (!fp_pl) {
 	perror("scrambler: payload:");
 	exit(1);
     }
     
-    static int **input;
-    int **result;
-    input = mat_in();
+    create_mat_2d(&input);
+    ret = 0;
+    for (i = 0; i < N; i++) {
+	for (j = 0; j <N; j++) {
+	    ret += fread((void *) &input[i][j],sz, 1, fp_pl);
+	}
+    }
+
+    if (ret < N) //for marking where a file has ended.
+	data_len = ret;
+    else
+	data_len = N;
 
     permute_info per;
     per.sel = c;
@@ -58,10 +73,10 @@ int main(int argc, const char *argv[])
     result = permute(&input,per);
     
     printf("Input Matrix was: \n");
-    mat_pr(input);
+    mat_pr_hex(input);
 
     printf("Matrix after permutation is: \n");
-    mat_pr(result);
+    mat_pr_hex(result);
     
     free_mat_2d(&result);
     free_mat_2d(&input);
@@ -88,11 +103,23 @@ void create_mat_2d(int ***gen) {
 
 void mat_pr(int **a) {
     int i, j;
-
     for (i = 0; i < N; i++) {
 	printf("Row %d\t", (i+1));
 	for (j = 0; j < N; j++) {
 	    printf("%d\t",a[i][j]);
+	}
+	printf("\n");
+    }
+}
+
+void mat_pr_hex(int **a) {
+    int i, j;
+    
+    printf("Printing in Hex\n");
+    for (i = 0; i < N; i++) {
+	printf("Row %d\t", (i+1));
+	for (j = 0; j < N; j++) {
+	    printf("0x%x\t",a[i][j]);
 	}
 	printf("\n");
     }
