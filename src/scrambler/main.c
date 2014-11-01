@@ -29,10 +29,13 @@ struct permute_info {
     int this, that;
 };
 
-int ** permute(int a[][], permute_info per);	//Do the transformation
-int ** make_i(int a[][]);			//Make I matrix
-int ** mat_mul( int a[][], int b[][]);		//Multiply matrices
+int ** permute(int ***a, permute_info per);	//Do the transformation
+int ** gen_i();			//Make I matrix
+int ** mat_mul( int ***a, int ***b);		//Multiply matrices
 int ** mat_in();
+void mat_pr(int **a);
+void create_mat_2d(int ***gen);
+void free_mat_2d(int ***ptr);
 
 int main(int argc, const char *argv[])
 {
@@ -42,31 +45,85 @@ int main(int argc, const char *argv[])
 	perror("scrambler: payload:");
 	exit(1);
     }
-	
+    
+    static int **input;
+    int **result;
+    input = mat_in();
+
+    permute_info per;
+    per.sel = c;
+    per.this = 0;
+    per.that = 1;
+
+    result = permute(&input,per);
+    
+    printf("Input Matrix was: \n");
+    mat_pr(input);
+
+    printf("Matrix after permutation is: \n");
+    mat_pr(result);
 
     return 0;
 }
 
-int ** permute(int mat[][], permute_info per) {
-    static int i[N][N];
-    i = make_i(i);
+void free_mat_2d(int ***ptr) {
+    int i;
+    for (i = 0; i < N; i++) {
+	free((*ptr)[i]);
+    }
+    free(*ptr);
+}
 
+void create_mat_2d(int ***gen) {
+    int i;
+    *gen = malloc(N * sizeof(int *));
+    for (i = 0; i < N; i++) {
+	(*gen)[i] = malloc(N * sizeof(int));	
+    }
+}
+
+void mat_pr(int **a) {
+    int i, j;
+
+    for (i = 0; i < N; i++) {
+	printf("Row %d\t", (i+1));
+	for (j = 0; j < N; j++) {
+	    printf("%d\t",a[i][j]);
+	}
+	printf("\n");
+    }
+}
+
+int ** permute(int ***mat, permute_info per) {
+    static int **i, **result;
+    int this, that;
+
+    this = per.this;
+    that = per.that;
+
+    i = gen_i();
+    
     i[this][this] = 0;
     i[this][that] = 1;
     i[that][this] = 1;
     i[that][that] = 0;
     
     if (per.sel == c)
-	mat = mat_mul(mat,i);
+	result = mat_mul(mat,&i);
     else
-	mat = mut_mul(i,mat);
-    return a;
+	result = mat_mul(&i,mat);
+
+    free_mat_2d(&i);
+
+    return result;
 
 }
 
-int ** make_i(int a[][]) {
+int ** gen_i() {
     int i,j;
-    static int mat[N][N];
+    static int **mat;
+    create_mat_2d(&mat);
+    
     for (i = 0; i < N; i++) {
     	for (j = 0; j < N; j++) {
 	    if (i==j)
@@ -79,33 +136,36 @@ int ** make_i(int a[][]) {
     return mat;
 }
 
-int ** mat_mul( int a[][], int b[][]) {
+int ** mat_mul( int ***a, int ***b) {
     int i,j,k;
-    static int pro[N][N];
+    static int **pro;
+
+    create_mat_2d(&pro);
 
     for (i = 0; i<N; i++)
 	for (j = 0; j < N; j++) {
 	    for (k = 0; k < N; k++) {
-		pro[i][j] = a[i][k] * b[k][j];	
+		pro[i][j] = (*a)[i][k] * (*b)[k][j];	
 	    }	    
 	}
 
-    return c;
+    return pro;
 }
 
 int ** mat_in()
 {
     int i,j;
-    static int mat[N][N];
+    int **mat;
+
+    create_mat_2d(&mat);
     printf("Entering %d X %d Matrix\n",N,N);
 
     for (i = 0; i < N; i++) {
-	printf("Enter row %d", (i+1));
+	printf("Enter row %d: ", (i+1));
 	for (j = 0; j < N; j++) {
 	    scanf("%d",&mat[i][j]);
 	}
-	printf("\n");
     }
 
-    return mat;
+    return (int **) mat;
 }
