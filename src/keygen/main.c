@@ -16,11 +16,11 @@
 #include <string.h>
 
 #define N 3
-#define SOPS_NUM 6
+#define SOPS_NUM 7
 #define MAX 25
 #define MIN 1
 
-enum sops { L, R, U, D, B, F};
+enum sops { A, B, C, D, E, F, G};
 struct sops_t {
     enum sops opr;
 }sobj;
@@ -34,24 +34,27 @@ char get_opr() {
     rando = rand() % SOPS_NUM ;
     char ret_val;
     switch (rando) {
-	case L :    ret_val = 'L';
-		    break;
-	
-	case R :    ret_val = 'R';
-		    break;
-	
-	case U :    ret_val = 'U';
-		    break;
-	
-	case D :    ret_val = 'D';
+	case A :    ret_val = 'A';
 		    break;
 	
 	case B :    ret_val = 'B';
 		    break;
 	
+	case C :    ret_val = 'C';
+		    break;
+	
+	case D :    ret_val = 'D';
+		    break;
+	
+	case E :    ret_val = 'E';
+		    break;
+	
 	case F :    ret_val = 'F';
 		    break;
-	default :   ret_val = 'L';
+	
+	case G :    ret_val = 'G';
+		    break;
+	default :   ret_val = 'A';
 	
     }
     return ret_val;
