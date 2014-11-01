@@ -184,7 +184,7 @@ int ** mat_mul( int ***a, int ***b) {
 int ** mat_in()
 {
     int i,j;
-    int **mat;
+    static int **mat;
 
     create_mat_2d(&mat);
     printf("Entering %d X %d Matrix\n",N,N);
@@ -196,5 +196,5 @@ int ** mat_in()
 	}
     }
 
-    return (int **) mat;
+    return mat;
 }
