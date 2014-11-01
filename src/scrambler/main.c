@@ -62,7 +62,11 @@ int main(int argc, const char *argv[])
 
     printf("Matrix after permutation is: \n");
     mat_pr(result);
+    
+    free_mat_2d(&result);
+    free_mat_2d(&input);
 
+    fclose(fp_pl);
     return 0;
 }
 
