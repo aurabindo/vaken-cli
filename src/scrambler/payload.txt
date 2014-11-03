@@ -1,9 +1,2 @@
-this is a sample file.
+Dummy_file_is_cool
 
-This shall be scrabled.
-
-Poor file. About get scrapped into peices. RIP, dear file.
-
-Adding another line. Just for kicks!
-
-:-)
