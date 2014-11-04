@@ -162,15 +162,15 @@ int main(int argc, char *argv[])
 	    data_len = N*N;
 	
 	struct timeval tm;
-	enum sops rando;
+	enum sops rand_key;
 	
-	//gettimeofday(&tm, NULL);
-	//srandom(tm.tv_sec + tm.tv_usec * 1000000ul);       
-	//rando = rand() % SOPS_NUM;
+	gettimeofday(&tm, NULL);
+	srandom(tm.tv_sec + tm.tv_usec * 1000000ul);
+	rand_key = rand() % SOPS_NUM;
 	
 	//todo_keys = fetch_key(rando);
 	if (encrypt)
-	    todo_keys = fetch_key(0);
+	    todo_keys = fetch_key(rand_key);
 	else if (decrypt)
 	    todo_keys = fetch_key(d_key);
 
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 	
 	int w,x; 
 	if (encrypt) {
-	    fprintf(fp_out,"%d ",0);
+	    fprintf(fp_out,"%d ",rand_key);
 	    for (w = 0; w < N; w++) {
 		for (x = 0; x < N; x++) {
 		    fprintf(fp_out,"%d ",result[w][x]);
