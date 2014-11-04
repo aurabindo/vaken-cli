@@ -67,9 +67,19 @@ int main(int argc, const char *argv[])
 	int kz;
 	time_t t;
 	struct timeval tm;
-	FILE *fp;
+	FILE *fp, *fp_xor;
+	unsigned char xor[N][N];
 
 	fp = fopen("keyfile","w");
+	if (!fp) {
+	    perror("keyfile:");
+	}
+
+	fp_xor = fopen("xorfile","w");
+	if (!xor) {
+	    perror("xorfile:");
+	}
+
 	gettimeofday(&tm, NULL);
 	srandom(tm.tv_sec + tm.tv_usec * 1000000ul);
 	
@@ -96,5 +106,15 @@ int main(int argc, const char *argv[])
 	}
 	fclose(fp);
 	free(save_cur_line);
+	unsigned int temp;
+	for (i = 0; i < N; i++) {
+	    for (j = 0; j < N; j++) {
+
+		xor[i][j] = (rand() % 255) + MIN;
+		fwrite((void *) &xor[i][j],sizeof(char),1,fp_xor);
+	    }
+	    printf("\n");
+	}
+	fclose(fp_xor);
 	return 0;
 }

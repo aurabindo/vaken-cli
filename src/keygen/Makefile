@@ -4,4 +4,4 @@ all:
 	$(CC) -ggdb $(SOURCE).c -o $(SOURCE)
 
 clean:
-	rm -rf keyfile $(SOURCE)
+	rm -rf keyfile xorfile $(SOURCE)
