@@ -1,4 +1,3 @@
-
 /*******************************************************************************
 *
 *   Copyright (C) 2014 Aurabindo J <mail@aurabindo.in>
@@ -16,16 +15,17 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
+#include <unistd.h>
 
-#define DATA_FILE "payload.txt"
-#define OUT_FILE "encrypted"
+#define PLD_FILE "payload.txt"
+#define ENC_FILE "encrypted"
+#define DEC_FILE "decrypted"
 
 #define N 3 // Max Rows and Cols
 #define sz sizeof(char)
 #define MAX 26
 #define KEYFILE "keyfile"
 #define SOPS_NUM 7
-
 
 enum dim { r,c };
 
@@ -55,75 +55,129 @@ void mat_pr_char(int **a);
 void create_mat_2d(int ***gen);
 void free_mat_2d(int ***ptr);
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
-    static FILE *fp_pl, *fp_out;
+    static FILE *fp_in, *fp_out;
     int **result;
     static int **input;
     char *todo_keys;
-    int ret,i, save_i,j, save_j,data_len, count;
+    char in_file[MAX], out_file[MAX];
+    int ret,i, save_i,j, save_j,data_len, count, encrypt, decrypt, opt, d_key;
+    int key_read_flag_dec =0;
+    char d_key_char;
 
-    fp_pl = fopen(DATA_FILE,"r");
-    if (!fp_pl) {
-	perror("scrambler: main:");
+    encrypt = 0;
+    decrypt = 0;
+    
+    if (argc <2) {
+	printf("Wrong Usage\n");
+	exit(1);
+    }
+
+    while ((opt = getopt(argc, argv, "ed")) != -1) {
+	switch (opt) {
+	    case 'e':	
+			encrypt = 1;
+			decrypt = 0;
+			strcpy(in_file,PLD_FILE);
+			strcpy(out_file,ENC_FILE);
+			break;
+            case 'd':
+			decrypt = 1;
+			encrypt = 0;
+			strcpy(in_file,ENC_FILE);
+			strcpy(out_file,DEC_FILE);
+			break;
+            default: /* '?' */
+			fprintf(stderr, "Usage: %s [-ed]\n",
+                        argv[0]);
+			exit(1);
+        }
+    }
+
+    printf("encrypt=%d; decrypt=%d\n", encrypt, decrypt);
+
+
+    fp_in = fopen(in_file,"r");
+    if (!fp_in) {
+	perror("scrambler: in_file:");
 	exit(1);
     }
     
-    fp_out = fopen(OUT_FILE, "w");
+    fp_out = fopen(out_file, "w");
     if (!fp_out) {
-	perror("scrambler: main:");
+	perror("scrambler: out_file:");
 	exit(1);
     }
 
     create_mat_2d(&input);
     save_i = 0;
     save_j = 0;
-    while (!feof(fp_pl)) {
-	ret = 0;
-
+    while (!feof(fp_in)) {
 	for (i = 0; i < N; i++) {
 	    for (j = 0; j < N; j++) {
 		input[i][j] = 0;
 	    }
 	}
-	for (i = 0; i < N; i++) {
+	key_read_flag_dec = 1;
+	ret = 0;
+	int ret_dec = 10;
+	int input_temp;
+	count =0;
+	for (i = 0; i < N; i++) { 
 	    for (j = 0; j <N; j++) {
-		ret = fread((void *) &input[i][j],sz, 1, fp_pl);
-		if (ret < 1) {
-		    save_i = i;
-		    save_j = j;
-		    break;
+		if (decrypt && key_read_flag_dec) {
+		    ret_dec = fscanf(fp_in, "%d",&d_key);
+		    //d_key = d_key_char - 0x30; //convert to integer
+		    key_read_flag_dec = 0;
+		    //fscanf(fp_in,"%c",&d_key);
 		}
-		else
-		    count++;
+		if (encrypt){
+		    ret = fread((void *) &input[i][j],sz, 1, fp_in);
+		    if (ret < 1) {
+			save_i = i;
+			save_j = j;
+			break;
+		    }
+		    else
+			count++;
+		} else if (decrypt) {
+		    ret_dec = fscanf(fp_in,"%d", &input_temp);
+		    if (ret_dec != EOF) {
+			input[i][j] = (char) input_temp;
+			count++;
+		    }
+		    else 
+			break;
+		}
 	    }
-	    if (ret < 1)
+
+	    if ((encrypt && (ret < 1)) || (decrypt && count == N * N))
 		break;
 	}
 
-	if (count < N*N) {		//fill the rest of the space with 0
+	if (count < N*N)		//fill the rest of the space with 0
 	    data_len = count;
-	    while (count < N) {
-		for (i = save_i; i < N; i++)
-		    for (j = save_j; j < N; j++)
-			input[i][j] = 0;
-	    }
-	}
 	else
 	    data_len = N*N;
 	
 	struct timeval tm;
 	enum sops rando;
 	
-	gettimeofday(&tm, NULL);
-	srandom(tm.tv_sec + tm.tv_usec * 1000000ul);       
-	rando = rand() % SOPS_NUM;
+	//gettimeofday(&tm, NULL);
+	//srandom(tm.tv_sec + tm.tv_usec * 1000000ul);       
+	//rando = rand() % SOPS_NUM;
 	
 	//todo_keys = fetch_key(rando);
-	todo_keys = fetch_key(0);
+	if (encrypt)
+	    todo_keys = fetch_key(0);
+	else if (decrypt)
+	    todo_keys = fetch_key(d_key);
+
 	permute_info per;
-	
-	for (i = 0; i < strlen(todo_keys); i++) {
+	int len;
+	len = strlen(todo_keys);
+	for (i = 0; i < len; i++) {
 	    switch (todo_keys[i]) {
 		case 'A'    :	// c0 to c1
 				per.sel = c;
@@ -158,7 +212,7 @@ int main(int argc, const char *argv[])
 		case 'G'    :	//may be xor ? right now same as F
 				per.sel = r;
 				per.this = 0;
-				per.that = 1;
+			per.that = 1;
 				break;
 		default	    :	//may be xor again? right now same as F
 				per.sel = r;
@@ -167,32 +221,33 @@ int main(int argc, const char *argv[])
 	    }
 
 	    result = permute(&input,per);
-//	    printf("Input Matrix was: \n");
-//	    mat_pr_char(input);
-
-//	    printf("Matrix after permutation is: \n");
-//	    mat_pr_char(result);
-	    //mat_fpr(result,fp_out); //printing to file
-	    
-
-	    
 	}
 	
 	printf("Input Matrix was: \n");
 	mat_pr_char(input);
 	printf("Matrix after permutation is: \n");
 	mat_pr_char(result);
-	fprintf(fp_out,"%d ",0);
+
+	
 	int w,x; 
-
-	for (w = 0; w < N; w++) {
-	    for (x = 0; x < N; x++) {
-		fprintf(fp_out,"%d ",result[w][x]);
+	if (encrypt) {
+	    fprintf(fp_out,"%d ",0);
+	    for (w = 0; w < N; w++) {
+		for (x = 0; x < N; x++) {
+		    fprintf(fp_out,"%d ",result[w][x]);
+		}
+		//printf("\n");
 	    }
-	    //printf("\n");
+	    fprintf(fp_out,"\n");
+	} else if (decrypt) {
+	    
+	    for (w = 0; w < N; w++) {
+		for (x = 0; x < N; x++) {
+		    fwrite((void *) &result[w][x],sz,1,fp_out);
+		}
+		//printf("\n");
+	    }
 	}
-	fprintf(fp_out,"\n");
-
 	for (w = 0; w < N; w++) {
 	    for (x = 0; x < N; x++) {
 		input[w][x] = result[w][x];
@@ -204,11 +259,10 @@ int main(int argc, const char *argv[])
 
     free_mat_2d(&result);
     free_mat_2d(&input);
-    fclose(fp_pl);
+    fclose(fp_in);
     fclose(fp_out);
     return 0;
 }
-
 
 char* fetch_key(int key){
     static char Rotation_string[MAX];
@@ -253,7 +307,7 @@ void create_mat_2d(int ***gen) {
 	exit(1);
     }
     for (i = 0; i < N; i++) {
-	(*gen)[i] = malloc(N * sizeof(int));	
+	(*gen)[i] = malloc(N * sizeof(char));	
     }
 }
 
