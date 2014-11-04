@@ -20,6 +20,7 @@
 #define PLD_FILE "payload.txt"
 #define ENC_FILE "encrypted"
 #define DEC_FILE "decrypted"
+#define XOR_NOISE "xorfile"
 
 #define N 3 // Max Rows and Cols
 #define sz sizeof(char)
@@ -44,6 +45,7 @@ struct sops_t {
 char ** keybank;				//To hold global keybank
 
 int ** permute(int ***a, permute_info per);	//Do the transformation
+int ** xor(int ***a);			//Do the transformation
 int ** gen_i();					//Make I matrix
 int ** mat_mul( int ***a, int ***b);		//Multiply matrices
 int ** mat_in();
@@ -65,6 +67,7 @@ int main(int argc, char *argv[])
     int ret,i, save_i,j, save_j,data_len, count, encrypt, decrypt, opt, d_key;
     int key_read_flag_dec =0;
     char d_key_char;
+    int xor_flag = 0;
 
     encrypt = 0;
     decrypt = 0;
@@ -209,18 +212,14 @@ int main(int argc, char *argv[])
 				per.this = 1;
 				per.that = 2;
 				break;
-		case 'G'    :	//may be xor ? right now same as F
-				per.sel = r;
-				per.this = 0;
-			per.that = 1;
-				break;
-		default	    :	//may be xor again? right now same as F
-				per.sel = r;
-				per.this = 0;
-				per.that = 1;
+		case 'G'    :	// XOR
+		default	    :	xor_flag = 1;
 	    }
 
-	    result = permute(&input,per);
+	    if (!xor_flag)
+		result = permute(&input,per);
+	    else
+		result = xor(&input);
 	}
 	
 	printf("Input Matrix was: \n");
@@ -258,10 +257,39 @@ int main(int argc, char *argv[])
     }
 
     free_mat_2d(&result);
-    free_mat_2d(&input);
+    //free_mat_2d(&input);
     fclose(fp_in);
     fclose(fp_out);
     return 0;
+}
+
+int ** xor(int ***a) {
+    FILE *fp_x;
+    int i,j,ret;
+    fp_x = fopen(XOR_NOISE,"r");
+    if (!fp_x) {
+	perror("xor noise:");
+	exit(1);
+    }
+
+    static int **xor;
+    create_mat_2d(&xor);
+    for (i = 0; i < N; i++) {
+	for (j = 0; j < N; j++) {
+	    ret = fread((void *) &xor[i][j],sizeof(char),1,fp_x);
+	}
+    }
+    printf("Xor key is: \n");
+    mat_pr_hex(xor);
+
+    for (i = 0; i < N; i++) {
+	for (j = 0; j < N; j++) {
+	    (*a)[i][j] = (*a)[i][j] ^ xor[i][j];
+	}
+    }
+
+    free_mat_2d(&xor);
+    return *a;
 }
 
 char* fetch_key(int key){
