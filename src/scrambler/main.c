@@ -287,7 +287,7 @@ int ** xor(int ***a) {
 	    (*a)[i][j] = (*a)[i][j] ^ xor[i][j];
 	}
     }
-
+    fclose(fp_x);
     free_mat_2d(&xor);
     return *a;
 }
