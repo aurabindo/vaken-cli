@@ -10,54 +10,21 @@
 *
 ********************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-
-#define N 3
-#define SOPS_NUM 7
-#define MAX 25
-#define MIN 1
-
-enum sops { A, B, C, D, E, F, G};
-struct sops_t {
-    enum sops opr;
-}sobj;
+#include "keygen.h"
 
 char get_opr() {
+    sops rando;
     struct timeval tm;
+    
     gettimeofday(&tm, NULL);
     srandom(tm.tv_sec + tm.tv_usec * 1000000ul);       
 
-    enum sops rando;
     rando = rand() % SOPS_NUM ;
-    char ret_val;
-    switch (rando) {
-	case A :    ret_val = 'A';
-		    break;
-	
-	case B :    ret_val = 'B';
-		    break;
-	
-	case C :    ret_val = 'C';
-		    break;
-	
-	case D :    ret_val = 'D';
-		    break;
-	
-	case E :    ret_val = 'E';
-		    break;
-	
-	case F :    ret_val = 'F';
-		    break;
-	
-	case G :    ret_val = 'G';
-		    break;
-	default :   ret_val = 'A';
-	
-    }
-    return ret_val;
+   
+    if ( ( 'A' <= rando ) && ( rando <= 'G' ) )
+	return rando;
+    else
+	return rando;
 }
 
 int main(int argc, const char *argv[])
@@ -70,14 +37,14 @@ int main(int argc, const char *argv[])
 	FILE *fp, *fp_xor;
 	unsigned char xor[N][N];
 
-	fp = fopen("keyfile","w");
+	fp = fopen("KEYBANK","w");
 	if (!fp) {
-	    perror("keyfile:");
+	    perror("KEYBANK:");
 	}
 
-	fp_xor = fopen("xorfile","w");
+	fp_xor = fopen("XOR","w");
 	if (!xor) {
-	    perror("xorfile:");
+	    perror("XOR:");
 	}
 
 	gettimeofday(&tm, NULL);

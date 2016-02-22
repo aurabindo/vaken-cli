@@ -1,4 +1,4 @@
-SOURCE = main
+SOURCE  = keygen
 
 all:
 	$(CC) -ggdb $(SOURCE).c -o $(SOURCE)
