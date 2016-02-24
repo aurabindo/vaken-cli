@@ -20,11 +20,8 @@ char get_opr() {
     srandom(tm.tv_sec + tm.tv_usec * 1000000ul);       
 
     rando = rand() % SOPS_NUM ;
-   
-    if ( ( 'A' <= rando ) && ( rando <= 'G' ) )
-	return rando;
-    else
-	return rando;
+
+    return (char) ((t_u8) rando + 'A');
 }
 
 int main(int argc, const char *argv[])
