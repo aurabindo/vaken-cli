@@ -1,3 +1,11 @@
 #About
 
 A variable key scrambling algorithm developed by chubs, iTank and jayaura.
+
+#Building
+
+```
+./configure
+make
+sudo make install
+```
