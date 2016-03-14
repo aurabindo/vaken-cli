@@ -86,8 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = scrambler$(EXEEXT)
-subdir = scrambler
+bin_PROGRAMS = vaken$(EXEEXT)
+subdir = vaken
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -99,9 +99,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_scrambler_OBJECTS = main.$(OBJEXT)
-scrambler_OBJECTS = $(am_scrambler_OBJECTS)
-scrambler_LDADD = $(LDADD)
+am_vaken_OBJECTS = main.$(OBJEXT)
+vaken_OBJECTS = $(am_vaken_OBJECTS)
+vaken_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -130,8 +130,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(scrambler_SOURCES)
-DIST_SOURCES = $(scrambler_SOURCES)
+SOURCES = $(vaken_SOURCES)
+DIST_SOURCES = $(vaken_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -243,7 +243,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-scrambler_SOURCES = main.c
+vaken_SOURCES = main.c
 all: all-am
 
 .SUFFIXES:
@@ -257,9 +257,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign scrambler/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign vaken/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign scrambler/Makefile
+	  $(AUTOMAKE) --foreign vaken/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -320,9 +320,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-scrambler$(EXEEXT): $(scrambler_OBJECTS) $(scrambler_DEPENDENCIES) $(EXTRA_scrambler_DEPENDENCIES) 
-	@rm -f scrambler$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(scrambler_OBJECTS) $(scrambler_LDADD) $(LIBS)
+vaken$(EXEEXT): $(vaken_OBJECTS) $(vaken_DEPENDENCIES) $(EXTRA_vaken_DEPENDENCIES) 
+	@rm -f vaken$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(vaken_OBJECTS) $(vaken_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

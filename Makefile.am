@@ -1,2 +1,2 @@
-SUBDIRS = keygen scrambler
+SUBDIRS = keygen vaken
 EXTRA_DIST = payload.txt
