@@ -1,0 +1,8 @@
+Hi everyone,
+
+This is a test payload file for encryption.
+Nothing interesting in here.
+
+--
+
+Vaken Project Authors
