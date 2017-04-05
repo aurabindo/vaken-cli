@@ -1,14 +1,14 @@
-#About
+# About
 
 A new encryption algorithm designed under guidance from Dr. B. Dinesh Rao, professor at Manipal University.
 This is a symmetric encryption algorithm and uses a variable key.
 
-#Authors
+# Authors
 
 Aurabindo J <mail@aurabindo.in>
 Piyush Itankar <pitankar@gmail.com>
 
-#Building
+# Building
 
 ```
 ./configure
@@ -16,7 +16,7 @@ make
 sudo make install
 ```
 
-#Removing
+# Removing
 
 Basic autotools targets like uninstall are available:
 
@@ -24,7 +24,7 @@ Basic autotools targets like uninstall are available:
 sudo make uninstall
 ```
 
-#Usage
+# Usage
 
 Since this a symmetric encryption algorithm, first create a
 keybank by running the keygen program:
