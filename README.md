@@ -7,6 +7,7 @@ This is a symmetric encryption algorithm and uses a variable key.
 
 Aurabindo J <mail@aurabindo.in>
 Piyush Itankar <pitankar@gmail.com>
+Namrata Singh <namratakushwah90@gmail.com>
 
 # Building
 
